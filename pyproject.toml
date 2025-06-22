@@ -3,8 +3,9 @@ name = "spicychat-api"
 version = "0.1.0"
 description = "An unofficial, asynchronous API wrapper for SpicyChat.ai."
 authors = ["Seuriin <seuriin@gmail.com>"]
+license = "MPL-2.0"
 readme = "README.md"
-packages = [{include = "spicy"}]
+packages = [{ include = "spicy" }]
 
 [tool.poetry.dependencies]
 python = "^3.8"
