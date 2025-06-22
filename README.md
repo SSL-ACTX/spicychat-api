@@ -29,3 +29,20 @@ An asynchronous, reverse-engineered Python wrapper for the **SpicyChat.ai** API.
 
 ```bash
 poetry install
+````
+
+---
+
+## 👤 Creator
+
+**Seuriin** (`SSL-ACTX`)
+[GitHub @SSL-ACTX](https://github.com/SSL-ACTX)
+
+---
+
+## 📜 License
+
+This project is licensed under the **Mozilla Public License 2.0**.
+Use it, remix it, build on it — but if you change the code, you gotta show it off 👓
+
+👉 [LICENSE](LICENSE)
