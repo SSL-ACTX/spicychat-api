@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "spicychat-api"
+version = "0.1.0"
+description = "An unofficial, asynchronous API wrapper for SpicyChat.ai."
+authors = ["Seuriin <seuriin@gmail.com>"]
+readme = "README.md"
+packages = [{include = "spicy"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+httpx = "^0.27.0"
+pydantic = "^2.7.1"
+beautifulsoup4 = "^4.12.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
