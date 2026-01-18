@@ -1,7 +1,9 @@
 # spicy/_models.py
+# Author: SSL-ACTX (Seuriin)
+# Code Reviewer / QA: Gemini 2.5 Flash
 
 from typing import List, Optional, Dict, Any
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl, field_validator
 import datetime
 
 # --- Auth Models ---
@@ -16,7 +18,7 @@ class TokenData(BaseModel):
 
 # --- User Models ---
 class UserSubscription(BaseModel):
-    pass # Empty; this one seems useless tbh
+    pass
 
 class User(BaseModel):
     id: str
@@ -72,7 +74,6 @@ class Message(BaseModel):
     prev_id: Optional[str] = None
     createdAt: Optional[float] = None
 
-# --- Model for the response from deleting messages ---
 class DeletedMessage(Message):
     deletedAt: int
     deleteReason: str
@@ -97,7 +98,7 @@ class GeneratedImage(BaseModel):
     key: str
     signed_url: HttpUrl
 
-# --- Application Models ---
+# --- Application & Generation Models ---
 class InferenceModel(BaseModel):
     id: str
     tag: Optional[str] = None
@@ -121,3 +122,17 @@ class ApplicationSettings(BaseModel):
     typesenseConfig: TypesenseConfig
     inferenceModels: List[InferenceModel]
     isNsfwEnabled: bool
+
+class GenerationSettings(BaseModel):
+    """
+    Settings to control the AI generation behavior.
+    """
+    max_new_tokens: int = Field(180, ge=1, le=300, description="Max tokens to generate (180 default, 300 for premium).")
+    temperature: float = Field(0.7, ge=0.0, le=1.5, description="Creativity vs focus (0.7 default).")
+    top_p: float = Field(0.7, ge=0.01, le=1.0, description="Nucleus sampling (0.7 default).")
+    top_k: int = Field(90, ge=1, le=100, description="Vocabulary limit (90 default).")
+
+    @field_validator('max_new_tokens')
+    def check_token_limit(cls, v):
+        # Warn or clamp if needed, but the API might just reject it.
+        return v

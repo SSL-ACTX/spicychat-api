@@ -1,4 +1,6 @@
 # spicy/_auth.py
+# Author: SSL-ACTX (Seuriin)
+# Code Reviewer / QA: Gemini 2.5 Flash
 
 import json
 import os
@@ -92,7 +94,8 @@ class AuthManager:
             "referer": f"https://gamma.kinde.com/auth/cx/_:nav&m:verify_email&psid:{psid}"
         }
 
-        # POST the OTP and expect a 200 OK with JSON redirect instructions.
+        # POST the OTP.
+        # Note: Kinde often returns 200 OK even if the OTP is wrong, passing back HTML instead of JSON logic.
         post_response = await self._auth_client.post(
             OTP_SUBMIT_ENDPOINT,
             files=files_payload,
@@ -100,13 +103,27 @@ class AuthManager:
         )
 
         if post_response.status_code != 200:
-            if "Please enter a valid confirmation code" in post_response.text:
-                 raise AuthenticationError("OTP submission failed. The code was likely incorrect or expired. Please try again.")
             raise AuthenticationError(f"OTP submission failed with unexpected status: {post_response.status_code} - {post_response.text}")
 
         try:
             response_data = post_response.json()
-            nested_json_str = response_data['json']
+            nested_json_str = response_data.get('json', '')
+            html_content = response_data.get('html', '')
+
+            # Case: OTP Failed (Server returns 200, empty 'json', and error message in 'html')
+            if not nested_json_str and html_content:
+                if "Please enter a valid confirmation code" in html_content:
+                    raise AuthenticationError("OTP submission failed. The code was likely incorrect or expired. Please try again.")
+                else:
+                    # Try to parse the HTML to see if there is another error message
+                    soup = BeautifulSoup(html_content, 'html.parser')
+                    error_msg = soup.find(class_='kinde-control-associated-text-variant-invalid-message')
+                    if error_msg:
+                        raise AuthenticationError(f"OTP submission failed: {error_msg.get_text(strip=True)}")
+
+                    raise AuthenticationError("OTP submission returned an HTML response indicating failure, but no specific error message was found.")
+
+            # Case: OTP Success
             redirect_info = json.loads(nested_json_str)
 
             if redirect_info.get('action') != 'redirect' or 'location' not in redirect_info:
@@ -114,6 +131,7 @@ class AuthManager:
 
             redirect_location = redirect_info['location']
         except (json.JSONDecodeError, KeyError) as e:
+            # If the specific error logic above didn't catch it, fail here
             raise AuthenticationError(f"Failed to parse redirect information from OTP response: {e} - Response was: {post_response.text}")
 
         print("OTP accepted. Following server-instructed redirect...")

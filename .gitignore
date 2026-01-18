@@ -1,0 +1,4 @@
+tests/
+.env
+guide.md
+spicy/__pycache__
