@@ -19,57 +19,16 @@ A robust, asynchronous, and fully-typed Python wrapper for the `spicychat.ai` AP
 
 ---
 
-## 🏗️ Architecture
-
-The library is built on a two-tier abstraction model to balance ease of use with raw power.
-
-```mermaid
-graph TD
-    User([User Script])
-    
-    subgraph "High Level (Easy Mode)"
-        Session[ChatSession]
-        History[History Manager]
-        Settings[GenerationSettings]
-    end
-    
-    subgraph "Low Level (Power User)"
-        Client[SpicyClient]
-        Auth[AuthManager]
-        HTTP[HttpManager]
-    end
-    
-    API[Spicychat API]
-    
-    User -->|Start Chat| Session
-    Session -->|Sync| History
-    Session -->|Config| Settings
-    Session -->|Wraps| Client
-    Client -->|Auth| Auth
-    Client -->|Requests| HTTP
-    HTTP -->|HTTPS| API
-
-```
-
----
-
 ## 📦 Installation
 
-1. **Clone the repository:**
+You can install the library directly from GitHub using `pip`. No manual cloning required.
+
 ```bash
-git clone https://github.com/SSL-ACTX/spicychat-api.git
-cd spicychat-api
+pip install git+https://github.com/SSL-ACTX/spicychat-api.git
 
 ```
 
-
-2. **Install dependencies:**
-```bash
-pip install httpx pydantic bs4
-
-```
-
-
+> Requires `git` to be installed on your system
 
 ---
 
@@ -102,6 +61,40 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+```
+
+---
+
+## 🏗️ Architecture
+
+The library is built on a two-tier abstraction model to balance ease of use with raw power.
+
+```mermaid
+graph TD
+    User([User Script])
+    
+    subgraph "High Level (Easy Mode)"
+        Session[ChatSession]
+        History[History Manager]
+        Settings[GenerationSettings]
+    end
+    
+    subgraph "Low Level (Power User)"
+        Client[SpicyClient]
+        Auth[AuthManager]
+        HTTP[HttpManager]
+    end
+    
+    API[Spicychat API]
+    
+    User -->|Start Chat| Session
+    Session -->|Sync| History
+    Session -->|Config| Settings
+    Session -->|Wraps| Client
+    Client -->|Auth| Auth
+    Client -->|Requests| HTTP
+    HTTP -->|HTTPS| API
 
 ```
 
@@ -200,7 +193,6 @@ import logging
 logging.getLogger("spicy").setLevel(logging.DEBUG)
 
 ```
-
 
 
 ---
